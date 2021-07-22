@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ebellon <ebellon@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: lrobino <lrobino@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 19:23:24 by ebellon           #+#    #+#             */
-/*   Updated: 2021/06/17 20:32:28 by ebellon          ###   ########lyon.fr   */
+/*   Updated: 2021/06/20 21:42:50 by lrobino          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+
+typedef struct	s_cmd_list
+{
+	char	**list;
+	size_t	size;
+}				t_cmd_list;
 
 char	**get_locations(char **envp)
 {
@@ -99,10 +105,10 @@ int	exec_cmd(char *cmd, char **locations, char **envp)
 	return (0);
 }
 
-int exec_cmd_list(char **list, int size, char **location, char **envp)
+int exec_cmd_list(t_cmd_list *list, int size, char **location, char **envp)
 {
-	pid_t	pid;
-	int		pipe_fd[2];
+	pid_t		pid;
+	int			pipe_fd[2];
 
 	pipe(pipe_fd);
 	if (size > 1)
@@ -112,8 +118,11 @@ int exec_cmd_list(char **list, int size, char **location, char **envp)
 			return 1;
 		if (pid == 0)
 		{
-			close(pipe_fd[0]);
-			dup2(pipe_fd[1], STDOUT_FILENO);
+			//if (size != list->size)
+			{
+				close(pipe_fd[0]);
+				dup2(pipe_fd[1], STDOUT_FILENO);
+			}
 			exec_cmd_list(list, size - 1, location, envp);
 			close(pipe_fd[1]);
 			exit (0);
@@ -121,10 +130,12 @@ int exec_cmd_list(char **list, int size, char **location, char **envp)
 		else
 			waitpid(pid, 0, WNOHANG);
 	}
-	dprintf(STDERR_FILENO, "%d\n", size);
-	close(pipe_fd[1]);
-	dup2(pipe_fd[0], STDIN_FILENO);
-	exec_cmd(list[size - 1], location, envp);
+	if (size != 1)
+	{
+		close(pipe_fd[1]);
+		dup2(pipe_fd[0], STDIN_FILENO);
+	}
+	exec_cmd(list->list[size - 1], location, envp);
 	close(pipe_fd[0]);
 	return (0);
 }
@@ -134,18 +145,22 @@ int	main(int ac, char **av, char **envp)
 	char	**locations;
 	int		i;
 	int		fd_pipe[2];
+	int		io_fd[2];
+	t_cmd_list	cmd_list = {
+		.list = av + 2,
+		.size = ac - 3
+	};
 
 	i = ac - 1;
 	locations = get_locations(envp);
 	if (!locations)
 		return (1);
-	
-	pipe(fd_pipe);
-	fd_pipe[0] = open(av[1], O_RDONLY, S_IRUSR | S_IRGRP | S_IROTH);
-	dup2(STDIN_FILENO, fd_pipe[0]);
-	// close(fd_pipe[0]);
-	exec_cmd_list(av + 2, ac - 3, locations, envp);
-	// dup2(open(av[ac-1], O_RDONLY | O_CREAT, 0544), STDOUT_FILENO);
+	io_fd[0] = open(av[1], O_RDONLY, 0644);
+	dup2(io_fd[0], STDIN_FILENO);
+	io_fd[1] = open(av[ac - 1], O_WRONLY | O_CREAT, 0644);
+	dup2(io_fd[1], STDOUT_FILENO);
+	exec_cmd_list(&cmd_list, cmd_list.size, locations, envp);
+
 	close(fd_pipe[1]);
 	return (0);
 }
