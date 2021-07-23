@@ -6,7 +6,7 @@
 /*   By: ebellon <ebellon@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 19:23:24 by ebellon           #+#    #+#             */
-/*   Updated: 2021/07/23 14:11:58 by ebellon          ###   ########lyon.fr   */
+/*   Updated: 2021/07/23 15:45:11 by ebellon          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,15 @@ int	exec_cmd(char *cmd, char **locations, char **envp)
 	return (0);
 }
 
+void	ft_set_pipe(int pipe_fd[2], int size)
+{
+	if (size != 1)
+	{
+		close(pipe_fd[1]);
+		dup2(pipe_fd[0], STDIN_FILENO);
+	}
+}
+
 int	exec_cmd_list(t_cmd_list *list, int size, char **location, char **envp)
 {
 	pid_t		pid;
@@ -58,8 +67,7 @@ int	exec_cmd_list(t_cmd_list *list, int size, char **location, char **envp)
 		else
 			waitpid(pid, 0, WNOHANG);
 	}
-	close(pipe_fd[1]);
-	dup2(pipe_fd[0], STDIN_FILENO);
+	ft_set_pipe(pipe_fd, size);
 	exec_cmd(list->list[size - 1], location, envp);
 	close(pipe_fd[0]);
 	return (0);
@@ -89,6 +97,9 @@ int	main(int ac, char **av, char **envp)
 	int			io_fd[2];
 	t_cmd_list	cmd_list;
 
+	if (ac < 5)
+		return (dprintf(2,
+				"4 args mini : ``< infile cmd1 | cmd2 > outfile``\n"));
 	i = ac - 1;
 	locations = get_locations(envp);
 	if (!locations)
