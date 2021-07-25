@@ -8,7 +8,7 @@ NAME	= $(TARGET_EXE)
 ## SRCS
 SRC_DIR=Sources
 
-SRCS=main.c pipex_utils.c
+SRCS=main2.c pipex_utils.c
 
 ## HEADER FILES
 HEADER_FILES=pipex.h

@@ -6,7 +6,7 @@
 /*   By: ebellon <ebellon@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 19:23:24 by ebellon           #+#    #+#             */
-/*   Updated: 2021/07/23 15:45:11 by ebellon          ###   ########lyon.fr   */
+/*   Updated: 2021/07/23 19:54:05 by ebellon          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ int	exec_cmd(char *cmd, char **locations, char **envp)
 	exec_path = get_exec_path(exec_name, locations);
 	if (exec_path == NULL)
 		dprintf(2, "pipex: command not found: %s\n", exec_name);
-	if (!exec_path)
 		return (1);
+	if (!exec_path)
 	pid = fork();
 	if (pid < 0)
 		return (1);
@@ -93,14 +93,12 @@ t_cmd_list	ft_set_cmd_list(int fd_av1, char **av, int ac)
 int	main(int ac, char **av, char **envp)
 {
 	char		**locations;
-	int			i;
 	int			io_fd[2];
 	t_cmd_list	cmd_list;
 
 	if (ac < 5)
 		return (dprintf(2,
 				"4 args mini : ``< infile cmd1 | cmd2 > outfile``\n"));
-	i = ac - 1;
 	locations = get_locations(envp);
 	if (!locations)
 		return (1);
