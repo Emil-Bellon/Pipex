@@ -6,7 +6,7 @@
 /*   By: ebellon <ebellon@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 19:23:24 by ebellon           #+#    #+#             */
-/*   Updated: 2021/07/23 19:54:05 by ebellon          ###   ########lyon.fr   */
+/*   Updated: 2021/07/28 17:31:20 by ebellon          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ int	exec_cmd(char *cmd, char **locations, char **envp)
 	exec_path = get_exec_path(exec_name, locations);
 	if (exec_path == NULL)
 		dprintf(2, "pipex: command not found: %s\n", exec_name);
-		return (1);
 	if (!exec_path)
+		return (1);
 	pid = fork();
 	if (pid < 0)
 		return (1);
