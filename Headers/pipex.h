@@ -6,7 +6,7 @@
 /*   By: ebellon <ebellon@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/23 14:09:03 by ebellon           #+#    #+#             */
-/*   Updated: 2021/07/28 19:50:09 by ebellon          ###   ########lyon.fr   */
+/*   Updated: 2021/07/30 16:02:27 by ebellon          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,13 @@ void	ft_free_tab(char **tab);
 char	**get_locations(char **envp);
 char	*concat_path(char *location, char *exec);
 char	*get_exec_path(char *exec_name, char **locations);
-void	ft_dup_close(int fd1, int fd2);
-void	ft_safe_close(int fd);
-void	ft_err_str(char *str, char *arg);
-int		ft_waitpids(t_pipe *job, int *wstatus);
+// void	ft_dup_close(int fd1, int fd2);
+void	ft_dup_close(int fd[2], char **cmd_arg,
+			char *exec_path, char **locations);
+int		ft_safe_close(int fd);
+void	ft_free_job_exit(char **cmd_arg, char *exec_path,
+			char **locations, int err);
+int		ft_waitpids(t_pipe *job);
 void	ft_set_job(t_pipe *job, size_t i, char **av, size_t ac);
 
 #endif

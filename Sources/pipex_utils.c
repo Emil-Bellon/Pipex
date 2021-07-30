@@ -6,7 +6,7 @@
 /*   By: ebellon <ebellon@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/23 14:08:46 by ebellon           #+#    #+#             */
-/*   Updated: 2021/07/23 19:59:22 by ebellon          ###   ########lyon.fr   */
+/*   Updated: 2021/07/30 16:02:06 by ebellon          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,5 +82,8 @@ char	*get_exec_path(char *exec_name, char **locations)
 		free(buf);
 		locations++;
 	}
+	ft_putstr_fd("pipex: command not found: ", STDERR_FILENO);
+	ft_putstr_fd(exec_name, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 	return (NULL);
 }
